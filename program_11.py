@@ -262,40 +262,40 @@ if __name__ == '__main__':
 
 # In[116]:
 
-
-for file in fileName.keys():
     
-    print( "\n", "="*50, "\n  Working on {} \n".format(file), "="*50, "\n" )
-    
-    DataDF[file], MissingValues[file] = ReadData(fileName[file])
-    print( "-"*50, "\n\nRaw data for {}...\n\n".format(file), DataDF[file].describe(), "\n\nMissing values: {}\n\n".format(MissingValues[file]))
-    
-    # clip to last 5 years
-    DataDF[file], MissingValues[file] = ClipData( DataDF[file], '2014-10-01', '2019-09-30' )
-    print( "-"*50, "\n\nSelected period data for {}...\n\n".format(file), DataDF[file].describe(), "\n\nMissing values: {}\n\n".format(MissingValues[file]))
+    for file in fileName.keys():
+        
+        print( "\n", "="*50, "\n  Working on {} \n".format(file), "="*50, "\n" )
+        
+        DataDF[file], MissingValues[file] = ReadData(fileName[file])
+        print( "-"*50, "\n\nRaw data for {}...\n\n".format(file), DataDF[file].describe(), "\n\nMissing values: {}\n\n".format(MissingValues[file]))
+        
+        # clip to last 5 years
+        DataDF[file], MissingValues[file] = ClipData( DataDF[file], '2014-10-01', '2019-09-30' )
+        print( "-"*50, "\n\nSelected period data for {}...\n\n".format(file), DataDF[file].describe(), "\n\nMissing values: {}\n\n".format(MissingValues[file]))
     
 
 
 # In[151]:
 
 
-# Rank Calculation Process
-# Dropping unused--> sorting --> Ranking (also reversing when necessary)
-# drop all other colums from metric file to choose only Peak Flow column
-WCat_drop = Ann_WCat.drop(columns=['site_no', 'Mean Flow', 'Median Flow', 'Coeff Var', 'Skew', 'Tqmean', 'R-B Index', '7Q', '3xMedian'])
-Tippe_drop= Ann_Tipp.drop(columns=['site_no', 'Mean Flow', 'Median Flow', 'Coeff Var', 'Skew', 'Tqmean', 'R-B Index', '7Q', '3xMedian'])
-
-WCatPeak_sort = WCat_drop.sort_values('Peak Flow', ascending=False)
-TippePeak_sort = Tippe_drop.sort_values('Peak Flow', ascending=False)
-
-WCatPeak_rank = stats.rankdata(WCatPeak_sort['Peak Flow'], method='average') 
-TippePeak_rank= stats.rankdata(TippePeak_sort['Peak Flow'], method='average') 
-WCat_rank = WCatPeak_rank[::-1]
-Tippe_rank = TippePeak_rank[::-1]
-
-#Plotting position calculation
-WCat_ProbPost = [((WCat_rank[i]/(len(WCatPeak_sort)+1))) for i in range(len(WCatPeak_sort))]
-Tippe_ProbPost  = [((Tippe_rank[i]/(len(TippePeak_sort)+1))) for i in range(len(TippePeak_sort))]
+    # Rank Calculation Process
+    # Dropping unused--> sorting --> Ranking (also reversing when necessary)
+    # drop all other colums from metric file to choose only Peak Flow column
+    WCat_drop = Ann_WCat.drop(columns=['site_no', 'Mean Flow', 'Median Flow', 'Coeff Var', 'Skew', 'Tqmean', 'R-B Index', '7Q', '3xMedian'])
+    Tippe_drop= Ann_Tipp.drop(columns=['site_no', 'Mean Flow', 'Median Flow', 'Coeff Var', 'Skew', 'Tqmean', 'R-B Index', '7Q', '3xMedian'])
+    
+    WCatPeak_sort = WCat_drop.sort_values('Peak Flow', ascending=False)
+    TippePeak_sort = Tippe_drop.sort_values('Peak Flow', ascending=False)
+    
+    WCatPeak_rank = stats.rankdata(WCatPeak_sort['Peak Flow'], method='average') 
+    TippePeak_rank= stats.rankdata(TippePeak_sort['Peak Flow'], method='average') 
+    WCat_rank = WCatPeak_rank[::-1]
+    Tippe_rank = TippePeak_rank[::-1]
+    
+    #Plotting position calculation
+    WCat_ProbPost = [((WCat_rank[i]/(len(WCatPeak_sort)+1))) for i in range(len(WCatPeak_sort))]
+    Tippe_ProbPost  = [((Tippe_rank[i]/(len(TippePeak_sort)+1))) for i in range(len(TippePeak_sort))]
 
 
 # In[164]:
@@ -307,115 +307,115 @@ Tippe_ProbPost  = [((Tippe_rank[i]/(len(TippePeak_sort)+1))) for i in range(len(
 # In[145]:
 
 
-# Fig 1: Daily flow for both streams for the last 5 years of the record.
-Wildcat_5y = DataDF['Wildcat']['2014-10-01' : '2019-09-30']
-Tippe_5y = DataDF['Tippe']['2014-10-01' : '2019-09-30']
-
-sns.set_style('darkgrid', rc={"grid.linewidth": 0.6})
-sns.set_context("notebook", font_scale=1, rc={"grid.linewidth": 1})
-plt.figure(figsize=(10,7.5)) 
-plt.plot(Wildcat_5y['Discharge'], color='b', label= 'Wildcat stream')
-plt.plot(Tippe_5y['Discharge'], color='r', label= 'Tippecanoe stream')
-plt.legend(["Wildcat stream", "Tippecanoe stream"])
-plt.xlabel('Year', size=16)
-plt.ylabel('Discharge (cfs)', size=16)
-plt.title('Daily Flow for both rivers (2014 to 2019)', size=18)
-plt.tight_layout()
-plt.savefig('DailyFlow_5yr.png', dpi=85) 
-plt.show()
-
+    # Fig 1: Daily flow for both streams for the last 5 years of the record.
+    Wildcat_5y = DataDF['Wildcat']['2014-10-01' : '2019-09-30']
+    Tippe_5y = DataDF['Tippe']['2014-10-01' : '2019-09-30']
+    
+    sns.set_style('darkgrid', rc={"grid.linewidth": 0.6})
+    sns.set_context("notebook", font_scale=1, rc={"grid.linewidth": 1})
+    plt.figure(figsize=(10,7.5)) 
+    plt.plot(Wildcat_5y['Discharge'], color='b', label= 'Wildcat stream')
+    plt.plot(Tippe_5y['Discharge'], color='r', label= 'Tippecanoe stream')
+    plt.legend(["Wildcat stream", "Tippecanoe stream"])
+    plt.xlabel('Year', size=16)
+    plt.ylabel('Discharge (cfs)', size=16)
+    plt.title('Daily Flow for both rivers (2014 to 2019)', size=18)
+    plt.tight_layout()
+    plt.savefig('DailyFlow_5yr.png', dpi=85) 
+    plt.show()
+    
 
 # In[143]:
 
 
-# Fig 2: Annual Coeff. of Variation of streamflow discharge (std.dev)
-
-sns.set_style('darkgrid', rc={"grid.linewidth": 0.6})
-sns.set_context("notebook", font_scale=1, rc={"grid.linewidth": 1})
-plt.figure(figsize=(10,7.5)) 
-plt.plot(Ann_WCat['Coeff Var'], color='b', label= 'Wildcat stream')
-plt.plot(Ann_Tipp['Coeff Var'], color='r', label= 'Tippecanoe stream')
-plt.legend(["Wildcat stream", "Tippecanoe stream"])
-plt.xlabel('Year', size=16)
-plt.ylabel('Discharge (cfs)', size=16)
-plt.title('Annual Coefficient of Variation', size=18)
-plt.tight_layout()
-plt.savefig('COV_Annual.png', dpi=85) 
-plt.show()
+    # Fig 2: Annual Coeff. of Variation of streamflow discharge (std.dev)
+    
+    sns.set_style('darkgrid', rc={"grid.linewidth": 0.6})
+    sns.set_context("notebook", font_scale=1, rc={"grid.linewidth": 1})
+    plt.figure(figsize=(10,7.5)) 
+    plt.plot(Ann_WCat['Coeff Var'], color='b', label= 'Wildcat stream')
+    plt.plot(Ann_Tipp['Coeff Var'], color='r', label= 'Tippecanoe stream')
+    plt.legend(["Wildcat stream", "Tippecanoe stream"])
+    plt.xlabel('Year', size=16)
+    plt.ylabel('Discharge (cfs)', size=16)
+    plt.title('Annual Coefficient of Variation', size=18)
+    plt.tight_layout()
+    plt.savefig('COV_Annual.png', dpi=85) 
+    plt.show()
 
 
 # In[142]:
 
 
-# Fig 3: Annual TQmean (fraction of time that daily streamflow exceeds mean streamflow for each year)
-sns.set_style('darkgrid', rc={"grid.linewidth": 0.6})
-sns.set_context("notebook", font_scale=1, rc={"grid.linewidth": 1})
-plt.figure(figsize=(10,7.5)) 
-plt.plot(Ann_WCat['Tqmean'], color='b', label= 'Wildcat stream')
-plt.plot(Ann_Tipp['Tqmean'], color='r', label= 'Tippecanoe stream')
-plt.legend(["Wildcat stream", "Tippecanoe stream"])
-plt.xlabel('Year', size=16)
-plt.ylabel('Discharge (cfs)', size=16)
-plt.title('Annual Streams TQ Mean', size=18)
-plt.tight_layout()
-plt.savefig('Annual_Streams_TQmean.png', dpi=85) 
-plt.show()
-
+    # Fig 3: Annual TQmean (fraction of time that daily streamflow exceeds mean streamflow for each year)
+    sns.set_style('darkgrid', rc={"grid.linewidth": 0.6})
+    sns.set_context("notebook", font_scale=1, rc={"grid.linewidth": 1})
+    plt.figure(figsize=(10,7.5)) 
+    plt.plot(Ann_WCat['Tqmean'], color='b', label= 'Wildcat stream')
+    plt.plot(Ann_Tipp['Tqmean'], color='r', label= 'Tippecanoe stream')
+    plt.legend(["Wildcat stream", "Tippecanoe stream"])
+    plt.xlabel('Year', size=16)
+    plt.ylabel('Discharge (cfs)', size=16)
+    plt.title('Annual Streams TQ Mean', size=18)
+    plt.tight_layout()
+    plt.savefig('Annual_Streams_TQmean.png', dpi=85) 
+    plt.show()
+    
 
 # In[141]:
 
-
-# Fig 4: R-B index (sum of the absolute values of day-to-day changes in daily discharge 
-sns.set_style('darkgrid', rc={"grid.linewidth": 0.6})
-sns.set_context("notebook", font_scale=1, rc={"grid.linewidth": 1})
-plt.figure(figsize=(10,7.5)) 
-plt.plot(Ann_WCat['R-B Index'], color='b', label= 'Wildcat stream')
-plt.plot(Ann_Tipp['R-B Index'], color='r', label= 'Tippecanoe stream')
-plt.legend(["Wildcat stream", "Tippecanoe stream"])
-plt.xlabel('Year', size=16)
-plt.ylabel('Discharge (cfs)', size=16)
-plt.title('R-B index (sum of the absolute values of D-to-D Discharge)', size=18)
-plt.tight_layout()
-plt.savefig('RB_Index.png', dpi=85) 
-plt.show()
+    
+    # Fig 4: R-B index (sum of the absolute values of day-to-day changes in daily discharge 
+    sns.set_style('darkgrid', rc={"grid.linewidth": 0.6})
+    sns.set_context("notebook", font_scale=1, rc={"grid.linewidth": 1})
+    plt.figure(figsize=(10,7.5)) 
+    plt.plot(Ann_WCat['R-B Index'], color='b', label= 'Wildcat stream')
+    plt.plot(Ann_Tipp['R-B Index'], color='r', label= 'Tippecanoe stream')
+    plt.legend(["Wildcat stream", "Tippecanoe stream"])
+    plt.xlabel('Year', size=16)
+    plt.ylabel('Discharge (cfs)', size=16)
+    plt.title('R-B index (sum of the absolute values of D-to-D Discharge)', size=18)
+    plt.tight_layout()
+    plt.savefig('RB_Index.png', dpi=85) 
+    plt.show()
 
 
 # In[157]:
 
 
-
-# Fig 5: Average annual monthly flow; using functions GetMonthlyStatistics and GetMonthlyAverages
-sns.set_style('darkgrid', rc={"grid.linewidth": 0.6})
-sns.set_context("notebook", font_scale=1, rc={"grid.linewidth": 1})
-plt.figure(figsize=(10,7.5)) 
-plt.plot(MoAvg['Wildcat']['Mean Flow'], color='b', label= 'Wildcat stream')
-plt.plot(MoAvg['Tippe']['Mean Flow'], color='r', label= 'Tippecanoe stream')
-plt.legend(["Wildcat stream", "Tippecanoe stream"])
-plt.xlabel('Month', size=16)
-plt.ylabel('Discharge (cfs)', size=16)
-plt.title('Average Annual Monthly', size=18)
-plt.tight_layout()
-plt.savefig('Annual_Monthly_mean.png', dpi=85) 
-plt.show()
+    
+    # Fig 5: Average annual monthly flow; using functions GetMonthlyStatistics and GetMonthlyAverages
+    sns.set_style('darkgrid', rc={"grid.linewidth": 0.6})
+    sns.set_context("notebook", font_scale=1, rc={"grid.linewidth": 1})
+    plt.figure(figsize=(10,7.5)) 
+    plt.plot(MoAvg['Wildcat']['Mean Flow'], color='b', label= 'Wildcat stream')
+    plt.plot(MoAvg['Tippe']['Mean Flow'], color='r', label= 'Tippecanoe stream')
+    plt.legend(["Wildcat stream", "Tippecanoe stream"])
+    plt.xlabel('Month', size=16)
+    plt.ylabel('Discharge (cfs)', size=16)
+    plt.title('Average Annual Monthly', size=18)
+    plt.tight_layout()
+    plt.savefig('Annual_Monthly_mean.png', dpi=85) 
+    plt.show()
 
 
 # In[158]:
 
-
-# Fig 6: Annual peak flow events
-sns.set_style('darkgrid', rc={"grid.linewidth": 0.6})
-sns.set_context("notebook", font_scale=1, rc={"grid.linewidth": 1})
-plt.figure(figsize=(10,7.5)) 
-plt.scatter(WCat_ProbPost, WCatPeak_sort['Peak Flow'], color='b', label= 'Wildcat stream',marker='*')
-plt.scatter(Tippe_ProbPost, TippePeak_sort['Peak Flow'], color='r', label= 'Tippecanoe stream',marker='o')
-ax= plt.gca()
-plt.legend(["Wildcat stream", "Tippecanoe stream"])
-plt.xlabel('Exceedence Probability (%)', size=16)
-plt.ylabel('Discharge (cfs)', size=16)
-plt.title('Return Period of Annual Peak Flow Events)', size=18)
-plt.tight_layout()
-plt.savefig('Return_Period_Ann_Events.png', dpi=85) 
-plt.show()
+    
+    # Fig 6: Annual peak flow events
+    sns.set_style('darkgrid', rc={"grid.linewidth": 0.6})
+    sns.set_context("notebook", font_scale=1, rc={"grid.linewidth": 1})
+    plt.figure(figsize=(10,7.5)) 
+    plt.scatter(WCat_ProbPost, WCatPeak_sort['Peak Flow'], color='b', label= 'Wildcat stream',marker='*')
+    plt.scatter(Tippe_ProbPost, TippePeak_sort['Peak Flow'], color='r', label= 'Tippecanoe stream',marker='o')
+    ax= plt.gca()
+    plt.legend(["Wildcat stream", "Tippecanoe stream"])
+    plt.xlabel('Exceedence Probability (%)', size=16)
+    plt.ylabel('Discharge (cfs)', size=16)
+    plt.title('Return Period of Annual Peak Flow Events)', size=18)
+    plt.tight_layout()
+    plt.savefig('Return_Period_Ann_Events.png', dpi=85) 
+    plt.show()
 
 
 # In[ ]:
